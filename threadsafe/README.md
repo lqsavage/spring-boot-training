@@ -1,4 +1,4 @@
-#结论：不是线程安全的
+# 结论：不是线程安全的
 
 Spring容器中的Bean是否线程安全，容器本身并没有提供Bean的线程安全策略，因此可以说Spring容器中的Bean本身不具备线程安全的特性，但是具体还是要结合具体scope的Bean去研究。
 
@@ -12,17 +12,17 @@ Spring 的 bean 作用域（scope）类型
 
 **线程安全这个问题，要从单例与原型Bean分别进行说明。**
 
-##原型Bean
+## 原型Bean
 
 对于原型Bean,每次创建一个新对象，也就是线程之间并不存在Bean共享，自然是不会有线程安全的问题。
 
-##单例Bean
+## 单例Bean
 
 对于单例Bean,所有线程都共享一个单例实例Bean,因此是存在资源的竞争。
 
 如果单例Bean,是一个无状态Bean，也就是线程中的操作不会对Bean的成员执行查询以外的操作，那么这个单例Bean是线程安全的。比如Spring mvc 的 Controller、Service、Dao等，这些Bean大多是无状态的，只关注于方法本身。
 
-##spring单例，为什么controller、service和dao确能保证线程安全？
+## spring单例，为什么controller、service和dao确能保证线程安全？
 Spring中的Bean默认是单例模式的，框架并没有对bean进行多线程的封装处理。
 
 实际上大部分时间Bean是无状态的（比如Dao） 所以说在某种程度上来说Bean其实是安全的。
@@ -44,7 +44,7 @@ Spring中的Bean默认是单例模式的，框架并没有对bean进行多线程
 
 Spring的根本就是通过大量这种单例构建起系统，以事务脚本的方式提供服务。
 
-##首先问@Controller @Service是不是线程安全的？
+## 首先问@Controller @Service是不是线程安全的？
 答：默认配置下不是的。为啥呢？因为默认情况下@Controller没有加上@Scope，没有加@Scope就是默认值singleton，单例的。意思就是系统只会初始化一次Controller容器，所以每次请求的都是同一个Controller容器，当然是非线程安全的。举个栗子：
 ```
 @RestController
