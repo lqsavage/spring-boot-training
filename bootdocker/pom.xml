@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.3.4.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.example</groupId>
+    <artifactId>bootdocker</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>bootdocker</name>
+    <description>Demo project for Spring Boot with docker</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <!--docker私服地址-->
+        <docker.repository>docker.io</docker.repository>
+        <docker.image.prefix>savagelee</docker.image.prefix>
+        <registry_username>Docker_Hub_用户名</registry_username>
+        <registry_password>Docker_Hub_密码</registry_password>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <!--如果package时不想用docker打包,就注释掉这个goal-->
+                        <!-- <goals>
+                            <goal>build</goal>
+                            <goal>push</goal>
+                        </goals> -->
+                    </execution>
+                </executions>
+                <configuration>
+                    <!--你需要配置的地方-->
+                    <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+                    <!--指定仓库名/镜像名-->
+                    <repository>${docker.repository}/${docker.image.prefix}/${project.artifactId}</repository>
+                    <!--指定tag -->
+                    <tag>${project.version}</tag>
+                    <buildArgs>
+                        <!--指定参数jar-->
+                        <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+                    </buildArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>2.6.0</version>
+                <configuration>
+                    <!--配置基本镜像-->
+                    <from>
+                        <!--from节点用来设置镜像的基础镜像，相当于Docerkfile中的FROM关键字-->
+                        <image>openjdk:8-jdk-alpine</image>
+                        <!--直接指定凭证（替代credHelper）-->
+                        <auth>
+                            <username>${registry_username}</username>
+                            <password>${registry_password}</password>
+                        </auth>
+                    </from>
+                    <!--配置最终推送的地址，仓库名，镜像名-->
+                    <to>
+                        <!--镜像名称和tag，使用了mvn内置变量${project.version}，表示当前工程的version-->
+                        <image>${docker.repository}/${docker.image.prefix}/${project.artifactId}</image>
+                        <tags>
+                            <tag>${project.version}</tag>
+                        </tags>
+                    </to>
+                    <!--容器相关的属性-->
+                    <container>
+                        <!--jvm内存参数-->
+                        <jvmFlags>
+                            <jvmFlag>-Xms4g</jvmFlag>
+                            <jvmFlag>-Xmx4g</jvmFlag>
+                        </jvmFlags>
+                        <!--要暴露的端口-->
+                        <ports>
+                            <port>8080</port>
+                        </ports>
+                        <!--使用该参数将镜像的创建时间与系统时间对其-->
+                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+                    </container>
+                    <allowInsecureRegistries>true</allowInsecureRegistries>
+                </configuration>
+                <!--绑定到maven lifecicle-->
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <!-- <goals>
+                            <goal>dockerBuild</goal>
+                        </goals> -->
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
