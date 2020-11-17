@@ -23,6 +23,16 @@
         <registry_password>Docker_Hub_密码</registry_password>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>docker.io</id>
+            <name>Docker Hub Registry</name>
+            <url>http://docker.io</url>
+            <layout>default</layout>
+        </repository>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -80,10 +90,11 @@
                     <execution>
                         <id>default</id>
                         <!--如果package时不想用docker打包,就注释掉这个goal-->
-                        <!-- <goals>
+                        <phase>package</phase>
+                        <!--<goals>
                             <goal>build</goal>
                             <goal>push</goal>
-                        </goals> -->
+                        </goals>-->
                     </execution>
                 </executions>
                 <configuration>
