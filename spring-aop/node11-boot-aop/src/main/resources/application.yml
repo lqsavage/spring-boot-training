@@ -1,0 +1,8 @@
+# 端口
+server:
+  port: 8011
+
+spring:
+  application:
+    # 应用名称
+    name: node11-boot-aop
