@@ -132,6 +132,11 @@
                         <tags>
                             <tag>${project.version}</tag>
                         </tags>
+                        <!--直接指定凭证（替代credHelper）-->
+                        <auth>
+                            <username>${registry_username}</username>
+                            <password>${registry_password}</password>
+                        </auth>
                     </to>
                     <!--容器相关的属性-->
                     <container>
@@ -153,9 +158,9 @@
                 <executions>
                     <execution>
                         <phase>compile</phase>
-                        <!-- <goals>
+                         <!--<goals>
                             <goal>dockerBuild</goal>
-                        </goals> -->
+                        </goals>-->
                     </execution>
                 </executions>
             </plugin>
